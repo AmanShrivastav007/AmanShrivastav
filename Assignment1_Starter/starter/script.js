@@ -67,3 +67,33 @@ document.addEventListener("DOMContentLoaded", function () {
   // Event listener for user login form submission
   document.getElementById("login-form").addEventListener("submit", processLogin);
 });
+function processLogin(event) {
+  event.preventDefault();
+  let usernameEntered = document.getElementById("username").value;
+  let passwordEntered = document.getElementById("password").value;
+
+  // Retrieve registered users from localStorage
+  const registeredUsers = localStorage.getItem("RegisteredUsers");
+
+  // Check if any users are registered
+  if (!registeredUsers) {
+      alert("No users are registered.");
+      return;
+  }
+
+  // Split registered users into username-password pairs
+  let usernamePasswordPairs = registeredUsers.split(";");
+
+  // Check if entered username and password match any registered user
+  let loginStatus = usernamePasswordPairs.some(pair => {
+      let [registeredUsername, registeredPassword] = pair.split(":");
+      return usernameEntered === registeredUsername && passwordEntered === registeredPassword;
+  });
+
+  // Provide login status feedback to the user
+  if (loginStatus) {
+      alert("Login successful!");
+  } else {
+      alert("Login failed. Invalid credentials.");
+  }
+}
