@@ -2,56 +2,68 @@ document.addEventListener("DOMContentLoaded", function () {
   const mobileMenu = document.querySelector(".mobile-menu");
   const menu = document.querySelector(".menu");
 
-  mobileMenu.addEventListener("click", function () {
-    menu.classList.toggle("show");
-  });
-});
-
-function processRegistration(event) {
-  event.preventDefault();
-  //alert('registration simulation');
-  let username = document.getElementById("username").value;
-  let password = document.getElementById("password").value;
-  //console.log(username);
-
-  localStorage.setItem("RegisteredUsers", username + ":" + password + ";");
-}
-
-function processLogin(event) {
-  event.preventDefault();
-  let usernameEntered = document.getElementById("username").value;
-  let passwordEntered = document.getElementById("password").value;
-
-  //alert("login simulation");
-  // Retrieving data from localStorage
-  const registeredUsers = localStorage.getItem("RegisteredUsers");
-  //console.log(registeredUsers);
-  let loginStatus = false;
-  let message = "";
-  if (registeredUsers != null) {
-    let usernamePasswordPairs = registeredUsers.split(";");
-    //console.log(usernamePasswordPairs[0]);
-    for (let i = 0; i < usernamePasswordPairs.length; i++) {
-      //console.log(usernamePasswordPairs[i]);
-      if (usernamePasswordPairs[i] != " ") {
-        let registeredUsername = usernamePasswordPairs[i].split(":")[0];
-        let registeredPassword = usernamePasswordPairs[i].split(":")[1];
-        console.log(registeredUsername);
-        console.log(registeredPassword);
-        if (
-          usernameEntered == registeredUsername &&
-          passwordEntered == registeredPassword
-        ) {
-          loginStatus = true;
-          break;
-        }
-      }
-    }
-    message = loginStatus
-      ? "login success"
-      : "login failed, invalid credentials";
-  } else {
-    message = "no one has registered!";
+  // Function to toggle mobile menu
+  function toggleMobileMenu() {
+      menu.classList.toggle("show");
   }
-  alert(message);
-}
+
+  // Event listener for mobile menu toggle
+  mobileMenu.addEventListener("click", toggleMobileMenu);
+
+  // Function to handle user registration
+  function processRegistration(event) {
+      event.preventDefault();
+      let username = document.getElementById("username").value;
+      let password = document.getElementById("password").value;
+
+      // Check if username and password are provided
+      if (!username || !password) {
+          alert("Please enter both username and password.");
+          return;
+      }
+
+      // Store user credentials in localStorage
+      localStorage.setItem("RegisteredUsers", username + ":" + password + ";");
+
+      // Provide feedback to the user
+      alert("Registration successful!");
+  }
+
+  // Function to handle user login
+  function processLogin(event) {
+      event.preventDefault();
+      let usernameEntered = document.getElementById("username").value;
+      let passwordEntered = document.getElementById("password").value;
+
+      // Retrieve registered users from localStorage
+      const registeredUsers = localStorage.getItem("RegisteredUsers");
+
+      // Check if any users are registered
+      if (!registeredUsers) {
+          alert("No users are registered.");
+          return;
+      }
+
+      // Split registered users into username-password pairs
+      let usernamePasswordPairs = registeredUsers.split(";");
+
+      // Check if entered username and password match any registered user
+      let loginStatus = usernamePasswordPairs.some(pair => {
+          let [registeredUsername, registeredPassword] = pair.split(":");
+          return usernameEntered === registeredUsername && passwordEntered === registeredPassword;
+      });
+
+      // Provide login status feedback to the user
+      if (loginStatus) {
+          alert("Login successful!");
+      } else {
+          alert("Login failed. Invalid credentials.");
+      }
+  }
+
+  // Event listener for user registration form submission
+  document.getElementById("registration-form").addEventListener("submit", processRegistration);
+
+  // Event listener for user login form submission
+  document.getElementById("login-form").addEventListener("submit", processLogin);
+});
